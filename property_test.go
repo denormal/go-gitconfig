@@ -109,13 +109,8 @@ func (p *ptest) Test(t *testing.T) {
 
 		// do we expect a list value?
 		if p.i != nil {
-			_list, _ok := p.p.List()
-			if !_ok {
-				t.Errorf(
-					"%q: list failure; expected %v, got %v",
-					p.n, true, _ok,
-				)
-			} else if len(p.l) != len(_list) {
+			_list := p.p.List()
+			if len(p.l) != len(_list) {
 				t.Errorf(
 					"%q: list length mismatch; expected %v, got %v",
 					p.n, len(p.l), len(_list),
@@ -234,13 +229,13 @@ func TestList(t *testing.T) {
 
 // _P returns the NewProperty test case
 func _P(n, v string, b *bool, i *int, l []string, e error) *ptest {
-	_property, _err := gitconfig.NewProperty(n, v)
+	_property := gitconfig.NewProperty(n, v)
 	_list := l
 	if _list == nil {
 		_list = []string{v}
 	}
 
-	return &ptest{n, _property, b, i, v, _list, e, _err}
+	return &ptest{n, _property, b, i, v, _list, e, nil}
 } // _P()
 
 // _B returns the NewBool test case
@@ -267,11 +262,11 @@ func _I(n, v string, b *bool, i *int, l []string, e error) *ptest {
 
 // _L returns the NewList test case
 func _L(n, v string, b *bool, i *int, l []string, e error) *ptest {
-	_property, _err := gitconfig.NewList(n, v)
+	_property := gitconfig.NewList(n, v)
 	_list := l
 	if _list == nil {
 		_list = []string{v}
 	}
 
-	return &ptest{n, _property, b, i, v, _list, e, _err}
+	return &ptest{n, _property, b, i, v, _list, e, nil}
 } // _L()

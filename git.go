@@ -68,18 +68,12 @@ func get(path, flag string) ([]Property, Error) {
 		switch len(_parts) {
 		case 1: // we have a name only
 			if _parts[0] != "" {
-				_property, _err := NewProperty(_parts[0], "")
-				if _err != nil {
-					return nil, _err
-				}
+				_property := NewProperty(_parts[0], "")
 				_rtn = append(_rtn, _property)
 			}
 		case 2: // we have a name and property
 			if _parts[0] != "" {
-				_property, _err := NewProperty(_parts[0], _parts[1])
-				if _err != nil {
-					return nil, _err
-				}
+				_property := NewProperty(_parts[0], _parts[1])
 				_rtn = append(_rtn, _property)
 			}
 		}

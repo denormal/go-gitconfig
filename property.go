@@ -25,7 +25,7 @@ type Property interface {
 
 	// List returns the list representation of the property. List splits the
 	// string representation of the property value at colons (":").
-	List() (list []string, ok bool)
+	List() []string
 
 	// Int returns the integer representation of the property. If the property
 	// value is not a valid integer, ok will be false.
@@ -38,9 +38,9 @@ type property struct {
 	v    string
 }
 
-// NewProperty returns a Property instance with the given name and value
-func NewProperty(name, v string) (Property, Error) {
-	return &property{name, v}, nil
+// NewProperty returns a Property instance with the given name and value v.
+func NewProperty(name, v string) Property {
+	return &property{name, v}
 } // NewProperty()
 
 // Name returns the name of the property.
@@ -63,15 +63,9 @@ func (p property) Bool() (bool, bool) {
 
 // List returns the list representation of the property. List splits the
 // string representation of the property value at colons (":").
-func (p property) List() ([]string, bool) {
-	// can we convert this property into a boolean?
-	//		- NewList() should never return an error
-	_list, _err := NewList(p.name, p.v)
-	if _err != nil {
-		return nil, false
-	} else {
-		return _list.List()
-	}
+func (p property) List() []string {
+	// convert this property into a boolean?
+	return NewList(p.name, p.v).List()
 } // List()
 
 // Int returns the integer representation of the property. If the property
@@ -106,8 +100,8 @@ func NewBool(name, v string) (Property, Error) {
 		fallthrough
 	case "true":
 		// NewProperty() should never return an error
-		_property, _err := NewProperty(name, v)
-		return &boolean{_property, true}, _err
+		_property := NewProperty(name, v)
+		return &boolean{_property, true}, nil
 
 	// false cases
 	case "0":
@@ -118,8 +112,8 @@ func NewBool(name, v string) (Property, Error) {
 		fallthrough
 	case "false":
 		// NewProperty() should never return an error
-		_property, _err := NewProperty(name, v)
-		return &boolean{_property, false}, _err
+		_property := NewProperty(name, v)
+		return &boolean{_property, false}, nil
 	}
 
 	return nil, NewError(name, InvalidBooleanError)
@@ -134,18 +128,19 @@ type list struct {
 	l []string
 }
 
-// NewList returns a property representing a list value.
-func NewList(name, v string) (Property, Error) {
+// NewList returns a property representing a list value. The value string v
+// is split on colons (":").
+func NewList(name, v string) Property {
 	// split the string on ":"
 	//		- NewProperty() should never return an error
 	_list := strings.Split(v, ":")
-	_property, _err := NewProperty(name, v)
+	_property := NewProperty(name, v)
 
-	return &list{_property, _list}, _err
+	return &list{_property, _list}
 } // NewList()
 
 // List returns the list representation of the list property.
-func (l list) List() ([]string, bool) { return l.l, true }
+func (l list) List() []string { return l.l }
 
 // integer is the implementation of an integer property.
 type integer struct {
@@ -161,9 +156,9 @@ func NewInt(name, v string) (Property, Error) {
 	if _err != nil {
 		return nil, NewError(name, InvalidIntegerError)
 	}
-	_property, _error := NewProperty(name, v)
+	_property := NewProperty(name, v)
 
-	return &integer{_property, _int}, _error
+	return &integer{_property, _int}, nil
 } // NewInt()
 
 // Int returns the integer representation of an integer property.
