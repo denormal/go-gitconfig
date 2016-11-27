@@ -169,18 +169,20 @@ func TestGitConfigGlobal(t *testing.T) {
 				len(_global.All()), len(_g.All()),
 			)
 		} else {
-			// ensure the retrieved values are the same
-			_values := _g.All()
+			// ensure the retrieved properties are the same
+			_properties := _g.All()
 			for _i, _got := range _global.All() {
-				_expected := _values[_i]
+				_expected := _properties[_i]
 				if _got.Name() != _expected.Name() {
 					t.Fatalf(
-						"value name mismatch; expected %q, got %q at index %d",
+						"property name mismatch; "+
+							"expected %q, got %q at index %d",
 						_expected.Name(), _got.Name(), _i,
 					)
 				} else if _got.String() != _expected.String() {
 					t.Fatalf(
-						"value name mismatch; expected %q, got %q at index %d",
+						"property name mismatch; "+
+							"expected %q, got %q at index %d",
 						_expected.String(), _got.String(), _i,
 					)
 				}
@@ -235,18 +237,20 @@ func TestGitConfigSystem(t *testing.T) {
 				len(_system.All()), len(_s.All()),
 			)
 		} else {
-			// ensure the retrieved values are the same
-			_values := _s.All()
+			// ensure the retrieved properties are the same
+			_properties := _s.All()
 			for _i, _got := range _system.All() {
-				_expected := _values[_i]
+				_expected := _properties[_i]
 				if _got.Name() != _expected.Name() {
 					t.Fatalf(
-						"value name mismatch; expected %q, got %q at index %d",
+						"property name mismatch; "+
+							"expected %q, got %q at index %d",
 						_expected.Name(), _got.Name(), _i,
 					)
 				} else if _got.String() != _expected.String() {
 					t.Fatalf(
-						"value name mismatch; expected %q, got %q at index %d",
+						"property name mismatch; "+
+							"expected %q, got %q at index %d",
 						_expected.String(), _got.String(), _i,
 					)
 				}
@@ -285,25 +289,25 @@ func TestGitConfigAll(t *testing.T) {
 		// now, manually build the output of All()
 		//		- this is an overlay of system, then global, then local
 		//		  with each successive config overwriting the previous
-		_map := make(map[string]gitconfig.Value)
-		for _, _value := range _system.All() {
-			_map[_value.Name()] = _value
+		_map := make(map[string]gitconfig.Property)
+		for _, _property := range _system.All() {
+			_map[_property.Name()] = _property
 		}
-		for _, _value := range _global.All() {
-			_map[_value.Name()] = _value
+		for _, _property := range _global.All() {
+			_map[_property.Name()] = _property
 		}
-		for _, _value := range _local.All() {
-			_map[_value.Name()] = _value
+		for _, _property := range _local.All() {
+			_map[_property.Name()] = _property
 		}
 
-		// create the ordered list of values
-		_expect := make([]gitconfig.Value, 0, len(_map))
-		for _, _value := range _map {
-			_expect = append(_expect, _value)
+		// create the ordered list of properties
+		_expect := make([]gitconfig.Property, 0, len(_map))
+		for _, _property := range _map {
+			_expect = append(_expect, _property)
 		}
-		sort.Sort(gitconfig.Values(_expect))
+		sort.Sort(gitconfig.Properties(_expect))
 
-		// ensure All() returns the expected values
+		// ensure All() returns the expected properties
 		_all := _config.All()
 		if len(_all) != len(_expect) {
 			t.Fatalf(
@@ -354,7 +358,7 @@ func TestGitConfigGet(t *testing.T) {
 			t.Fatalf("%q: unexpected nil from NewGitConfig", _path)
 		}
 
-		// ensure we can Get() all values returned by All()
+		// ensure we can Get() all properties returned by All()
 		for _, _expected := range _config.All() {
 			_got, _ok := _config.Get(_expected.Name())
 			if !_ok {
@@ -364,7 +368,7 @@ func TestGitConfigGet(t *testing.T) {
 				)
 			} else if _got == nil {
 				t.Fatalf(
-					"%q: unexpected nil value; expected %v",
+					"%q: unexpected nil property; expected %v",
 					_expected.Name(), _expected,
 				)
 			} else if _got.Name() != _expected.Name() {
@@ -381,8 +385,8 @@ func TestGitConfigGet(t *testing.T) {
 		}
 
 		// ensure Get() behaves as expected when given unknown names
-		for _, _value := range _config.All() {
-			_get := _value.Name() + time.Now().String()
+		for _, _property := range _config.All() {
+			_get := _property.Name() + time.Now().String()
 			_got, _ok := _config.Get(_get)
 			if _ok {
 				t.Fatalf(
@@ -391,7 +395,7 @@ func TestGitConfigGet(t *testing.T) {
 				)
 			} else if _got != nil {
 				t.Fatalf(
-					"%q: unexpected Get() value; expected nil, got %v",
+					"%q: unexpected Get() property; expected nil, got %v",
 					_get, _got.Name(),
 				)
 			}
@@ -425,33 +429,33 @@ func TestGitConfigFind(t *testing.T) {
 
 		// first, ensure Find() behaves like Get() when given an exact match
 		_all := _config.All()
-		for _, _value := range _all {
-			_find := _config.Find(_value.Name())
+		for _, _property := range _all {
+			_find := _config.Find(_property.Name())
 			if len(_find) != 1 {
 				t.Fatalf(
 					"%q: unexpected Find(); expected %d results, got %d",
-					_value.Name(), 1, len(_find),
+					_property.Name(), 1, len(_find),
 				)
-			} else if _find[0].Name() != _value.Name() {
+			} else if _find[0].Name() != _property.Name() {
 				t.Fatalf(
 					"%q: unexpected Find(); expected %q, got %q",
-					_value.Name(), _value.Name(), _find[0].Name(),
+					_property.Name(), _property.Name(), _find[0].Name(),
 				)
 			}
 		}
 
 		// now, perform prefix searches
 		_prefixes := prefixes(_all)
-		for _prefix, _values := range _prefixes {
+		for _prefix, _properties := range _prefixes {
 			_find := _config.Find(_prefix)
-			if len(_find) != len(_values) {
+			if len(_find) != len(_properties) {
 				t.Fatalf(
 					"%q: unexpected Find(); expected %d results, got %d",
-					_prefix, len(_values), len(_find),
+					_prefix, len(_properties), len(_find),
 				)
 			} else {
 				for _i := 0; _i < len(_find); _i++ {
-					_expected := _values[_i]
+					_expected := _properties[_i]
 					_got := _find[_i]
 					if _got.Name() != _expected.Name() {
 						t.Fatalf(
@@ -608,20 +612,20 @@ func lookup(content string) map[string]bool {
 	return _map
 } // lookup()
 
-func prefixes(values []gitconfig.Value) map[string][]gitconfig.Value {
-	_map := make(map[string][]gitconfig.Value)
-	for _, _value := range values {
-		_prefix := prefix(_value.Name())
+func prefixes(properties []gitconfig.Property) map[string][]gitconfig.Property {
+	_map := make(map[string][]gitconfig.Property)
+	for _, _property := range properties {
+		_prefix := prefix(_property.Name())
 		_, _ok := _map[_prefix]
 		if !_ok {
-			_map[_prefix] = make([]gitconfig.Value, 0)
+			_map[_prefix] = make([]gitconfig.Property, 0)
 		}
-		_map[_prefix] = append(_map[_prefix], _value)
+		_map[_prefix] = append(_map[_prefix], _property)
 	}
 
-	// sort the expected return values
+	// sort the expected return properties
 	for _, _list := range _map {
-		sort.Sort(gitconfig.Values(_list))
+		sort.Sort(gitconfig.Properties(_list))
 	}
 
 	return _map

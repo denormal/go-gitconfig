@@ -6,9 +6,9 @@ import (
 	"github.com/denormal/go-gitconfig"
 )
 
-type vtest struct {
+type ptest struct {
 	n   string
-	v   gitconfig.Value
+	p   gitconfig.Property
 	b   *bool
 	i   *int
 	s   string
@@ -17,116 +17,116 @@ type vtest struct {
 	err gitconfig.Error
 }
 
-func (vt *vtest) Test(t *testing.T) {
+func (p *ptest) Test(t *testing.T) {
 	// do we expect an error?
-	if vt.e != nil {
-		if vt.err == nil {
+	if p.e != nil {
+		if p.err == nil {
 			t.Errorf(
 				"%q: expected New error %q; none found",
-				vt.n, vt.e.Error(),
+				p.n, p.e.Error(),
 			)
-		} else if vt.err.Underlying() != vt.e {
+		} else if p.err.Underlying() != p.e {
 			t.Errorf(
 				"%q: New error mismatch; expected %q, got %q",
-				vt.n, vt.e.Error(), vt.err.Error(),
+				p.n, p.e.Error(), p.err.Error(),
 			)
 		}
 	} else {
 
 		// ensure the name is as expected
-		if vt.v.Name() != vt.n {
+		if p.p.Name() != p.n {
 			t.Errorf(
 				"%q: unexpected name; expected %q, got %q",
-				vt.n, vt.n, vt.v.Name(),
+				p.n, p.n, p.p.Name(),
 			)
 		}
 
 		// ensure the string form is as expected
-		if vt.v.String() != vt.s {
+		if p.p.String() != p.s {
 			t.Errorf(
 				"%q: unexpected string; expected %q, got %q",
-				vt.n, vt.s, vt.v.String(),
+				p.n, p.s, p.p.String(),
 			)
 		}
 
 		// do we expect a boolean value?
-		if vt.b != nil {
-			_bool, _ok := vt.v.Bool()
+		if p.b != nil {
+			_bool, _ok := p.p.Bool()
 			if !_ok {
 				t.Errorf(
 					"%q: boolean failure; expected %v, got %v",
-					vt.n, true, _ok,
+					p.n, true, _ok,
 				)
-			} else if *vt.b != _bool {
+			} else if *p.b != _bool {
 				t.Errorf(
 					"%q: boolean mismatch; expected %v, got %v",
-					*vt.b, _bool,
+					*p.b, _bool,
 				)
 			}
 		} else {
-			_bool, _ok := vt.v.Bool()
+			_bool, _ok := p.p.Bool()
 			if _ok {
 				t.Errorf(
 					"%q: unexpected boolean success; expected %v, got %v",
-					vt.n, false, _ok,
+					p.n, false, _ok,
 				)
 			} else if _bool != false {
 				t.Errorf(
 					"%q: unexpected boolean return; expected %v, got %v",
-					vt.n, false, _bool,
+					p.n, false, _bool,
 				)
 			}
 		}
 
 		// do we expect an integer value?
-		if vt.i != nil {
-			_int, _ok := vt.v.Int()
+		if p.i != nil {
+			_int, _ok := p.p.Int()
 			if !_ok {
 				t.Errorf(
 					"%q: integer failure; expected %v, got %v",
-					vt.n, true, _ok,
+					p.n, true, _ok,
 				)
-			} else if *vt.i != _int {
+			} else if *p.i != _int {
 				t.Errorf(
 					"%q: integer mismatch; expected %v, got %v",
-					*vt.i, _int,
+					*p.i, _int,
 				)
 			}
 		} else {
-			_int, _ok := vt.v.Int()
+			_int, _ok := p.p.Int()
 			if _ok {
 				t.Errorf(
 					"%q: unexpected integer success; expected %v, got %v",
-					vt.n, false, _ok,
+					p.n, false, _ok,
 				)
 			} else if _int != 0 {
 				t.Errorf(
 					"%q: unexpected integer return; expected %v, got %v",
-					vt.n, 0, _int,
+					p.n, 0, _int,
 				)
 			}
 		}
 
 		// do we expect a list value?
-		if vt.i != nil {
-			_list, _ok := vt.v.List()
+		if p.i != nil {
+			_list, _ok := p.p.List()
 			if !_ok {
 				t.Errorf(
 					"%q: list failure; expected %v, got %v",
-					vt.n, true, _ok,
+					p.n, true, _ok,
 				)
-			} else if len(vt.l) != len(_list) {
+			} else if len(p.l) != len(_list) {
 				t.Errorf(
 					"%q: list length mismatch; expected %v, got %v",
-					vt.n, len(vt.l), len(_list),
+					p.n, len(p.l), len(_list),
 				)
 			} else {
-				for _i, _v := range vt.l {
+				for _i, _v := range p.l {
 					if _list[_i] != _v {
 						t.Errorf(
 							"%q: list item mismatch; "+
 								"expected %v, got %v for item %d",
-							vt.n, _v, _list[_i], _i,
+							p.n, _v, _list[_i], _i,
 						)
 					}
 				}
@@ -144,24 +144,24 @@ var (
 	__123  = -123
 	_1234  = 1234
 
-	// define the value tests
+	// define the property tests
 	//		- each test must have a unique name
 	//		- tests are expected to start with X. to assist config_test.go
-	_VALUE = []*vtest{
-		// _V( name, value, bool, int, list, error )
-		_V("v.a", "?", nil, nil, nil, nil),
-		_V("v.b", "1", &_true, &_1, nil, nil),
-		_V("v.c", "on", &_true, nil, nil, nil),
-		_V("v.d", "yes", &_true, nil, nil, nil),
-		_V("v.e", "true", &_true, nil, nil, nil),
-		_V("v.f", "0", &_false, &_0, nil, nil),
-		_V("v.g", "off", &_false, nil, nil, nil),
-		_V("v.h", "no", &_false, nil, nil, nil),
-		_V("v.i", "false", &_false, nil, nil, nil),
+	_PROPERTIES = []*ptest{
+		// _P( name, property, bool, int, list, error )
+		_P("p.a", "?", nil, nil, nil, nil),
+		_P("p.b", "1", &_true, &_1, nil, nil),
+		_P("p.c", "on", &_true, nil, nil, nil),
+		_P("p.d", "yes", &_true, nil, nil, nil),
+		_P("p.e", "true", &_true, nil, nil, nil),
+		_P("p.f", "0", &_false, &_0, nil, nil),
+		_P("p.g", "off", &_false, nil, nil, nil),
+		_P("p.h", "no", &_false, nil, nil, nil),
+		_P("p.i", "false", &_false, nil, nil, nil),
 	}
 
-	_BOOL = []*vtest{
-		// _B( name, value, bool, int, list, error )
+	_BOOLS = []*ptest{
+		// _B( name, property, bool, int, list, error )
 		_B("b.a", "?", nil, nil, nil, gitconfig.InvalidBooleanError),
 		_B("b.b", "1", &_true, &_1, nil, nil),
 		_B("b.c", "on", &_true, nil, nil, nil),
@@ -173,8 +173,8 @@ var (
 		_B("b.i", "false", &_false, nil, nil, nil),
 	}
 
-	_INT = []*vtest{
-		// _I( name, value, bool, int, list, error )
+	_INTS = []*ptest{
+		// _I( name, property, bool, int, list, error )
 		_I("i.a", "?", nil, nil, nil, gitconfig.InvalidIntegerError),
 		_I("i.b", "1", &_true, &_1, nil, nil),
 		_I("i.c", "on", &_true, nil, nil, gitconfig.InvalidIntegerError),
@@ -184,8 +184,8 @@ var (
 		_I("i.g", "1234", nil, &_1234, nil, nil),
 	}
 
-	_LIST = []*vtest{
-		// _L( name, value, bool, int, list, error )
+	_LISTS = []*ptest{
+		// _L( name, property, bool, int, list, error )
 		_L("l.a", "?", nil, nil, nil, nil),
 		_L("l.b", "1", &_true, &_1, nil, nil),
 		_L("l.c", "on", &_true, nil, nil, nil),
@@ -200,30 +200,30 @@ var (
 	}
 )
 
-func TestValue(t *testing.T) {
-	// iterate over the value tests
-	for _, _test := range _VALUE {
+func TestProperty(t *testing.T) {
+	// iterate over the property tests
+	for _, _test := range _PROPERTIES {
 		_test.Test(t)
 	}
-} // TestValue()
+} // TestProperty()
 
 func TestBool(t *testing.T) {
 	// iterate over the boolean tests
-	for _, _test := range _BOOL {
+	for _, _test := range _BOOLS {
 		_test.Test(t)
 	}
 } // TestBool()
 
 func TestInt(t *testing.T) {
 	// iterate over the integer tests
-	for _, _test := range _INT {
+	for _, _test := range _INTS {
 		_test.Test(t)
 	}
 } // TestInt()
 
 func TestList(t *testing.T) {
 	// iterate over the list tests
-	for _, _test := range _LIST {
+	for _, _test := range _LISTS {
 		_test.Test(t)
 	}
 } // TestList()
@@ -232,46 +232,46 @@ func TestList(t *testing.T) {
 // helper functions
 //
 
-// _V returns the NewValue test case
-func _V(n, v string, b *bool, i *int, l []string, e error) *vtest {
-	_value, _err := gitconfig.NewValue(n, v)
+// _P returns the NewProperty test case
+func _P(n, v string, b *bool, i *int, l []string, e error) *ptest {
+	_property, _err := gitconfig.NewProperty(n, v)
 	_list := l
 	if _list == nil {
 		_list = []string{v}
 	}
 
-	return &vtest{n, _value, b, i, v, _list, e, _err}
-} // _V()
+	return &ptest{n, _property, b, i, v, _list, e, _err}
+} // _P()
 
 // _B returns the NewBool test case
-func _B(n, v string, b *bool, i *int, l []string, e error) *vtest {
-	_value, _err := gitconfig.NewBool(n, v)
+func _B(n, v string, b *bool, i *int, l []string, e error) *ptest {
+	_property, _err := gitconfig.NewBool(n, v)
 	_list := l
 	if _list == nil {
 		_list = []string{v}
 	}
 
-	return &vtest{n, _value, b, i, v, _list, e, _err}
+	return &ptest{n, _property, b, i, v, _list, e, _err}
 } // _B()
 
 // _I returns the NewInt test case
-func _I(n, v string, b *bool, i *int, l []string, e error) *vtest {
-	_value, _err := gitconfig.NewInt(n, v)
+func _I(n, v string, b *bool, i *int, l []string, e error) *ptest {
+	_property, _err := gitconfig.NewInt(n, v)
 	_list := l
 	if _list == nil {
 		_list = []string{v}
 	}
 
-	return &vtest{n, _value, b, i, v, _list, e, _err}
+	return &ptest{n, _property, b, i, v, _list, e, _err}
 } // _I()
 
 // _L returns the NewList test case
-func _L(n, v string, b *bool, i *int, l []string, e error) *vtest {
-	_value, _err := gitconfig.NewList(n, v)
+func _L(n, v string, b *bool, i *int, l []string, e error) *ptest {
+	_property, _err := gitconfig.NewList(n, v)
 	_list := l
 	if _list == nil {
 		_list = []string{v}
 	}
 
-	return &vtest{n, _value, b, i, v, _list, e, _err}
+	return &ptest{n, _property, b, i, v, _list, e, _err}
 } // _L()

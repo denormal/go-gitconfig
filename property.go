@@ -11,7 +11,7 @@ var (
 	InvalidIntegerError = errors.New("invalid integer value")
 )
 
-type Value interface {
+type Property interface {
 	Name() string
 	String() string
 	Bool() (bool, bool)
@@ -19,21 +19,21 @@ type Value interface {
 	Int() (int, bool)
 }
 
-type value struct {
+type property struct {
 	name string
 	v    string
 }
 
-func NewValue(name, v string) (Value, Error) {
-	return &value{name, v}, nil
-} // NewValue()
+func NewProperty(name, v string) (Property, Error) {
+	return &property{name, v}, nil
+} // NewProperty()
 
-func (v value) Name() string   { return v.name }
-func (v value) String() string { return v.v }
+func (p property) Name() string   { return p.name }
+func (p property) String() string { return p.v }
 
-func (v value) Bool() (bool, bool) {
-	// can we convert this value into a boolean?
-	_bool, _err := NewBool(v.name, v.v)
+func (p property) Bool() (bool, bool) {
+	// can we convert this property into a boolean?
+	_bool, _err := NewBool(p.name, p.v)
 	if _err != nil {
 		return false, false
 	} else {
@@ -41,10 +41,10 @@ func (v value) Bool() (bool, bool) {
 	}
 } // Bool()
 
-func (v value) List() ([]string, bool) {
-	// can we convert this value into a boolean?
+func (p property) List() ([]string, bool) {
+	// can we convert this property into a boolean?
 	//		- NewList() should never return an error
-	_list, _err := NewList(v.name, v.v)
+	_list, _err := NewList(p.name, p.v)
 	if _err != nil {
 		return nil, false
 	} else {
@@ -52,9 +52,9 @@ func (v value) List() ([]string, bool) {
 	}
 } // List()
 
-func (v value) Int() (int, bool) {
-	// can we convert this value into an integer?
-	_int, _err := NewInt(v.name, v.v)
+func (p property) Int() (int, bool) {
+	// can we convert this property into an integer?
+	_int, _err := NewInt(p.name, p.v)
 	if _err != nil {
 		return 0, false
 	} else {
@@ -63,11 +63,11 @@ func (v value) Int() (int, bool) {
 } // Int()
 
 type boolean struct {
-	Value
+	Property
 	b bool
 }
 
-func NewBool(name, v string) (Value, Error) {
+func NewBool(name, v string) (Property, Error) {
 	switch v {
 	// true cases
 	case "1":
@@ -77,9 +77,9 @@ func NewBool(name, v string) (Value, Error) {
 	case "yes":
 		fallthrough
 	case "true":
-		// NewValue() should never return an error
-		_value, _err := NewValue(name, v)
-		return &boolean{_value, true}, _err
+		// NewProperty() should never return an error
+		_property, _err := NewProperty(name, v)
+		return &boolean{_property, true}, _err
 
 	// false cases
 	case "0":
@@ -89,9 +89,9 @@ func NewBool(name, v string) (Value, Error) {
 	case "no":
 		fallthrough
 	case "false":
-		// NewValue() should never return an error
-		_value, _err := NewValue(name, v)
-		return &boolean{_value, false}, _err
+		// NewProperty() should never return an error
+		_property, _err := NewProperty(name, v)
+		return &boolean{_property, false}, _err
 	}
 
 	return nil, NewError(name, InvalidBooleanError)
@@ -100,36 +100,36 @@ func NewBool(name, v string) (Value, Error) {
 func (b boolean) Bool() (bool, bool) { return b.b, true }
 
 type list struct {
-	Value
+	Property
 	l []string
 }
 
-func NewList(name, v string) (Value, Error) {
+func NewList(name, v string) (Property, Error) {
 	// split the string on ":"
-	//		- NewValue() should never return an error
+	//		- NewProperty() should never return an error
 	_list := strings.Split(v, ":")
-	_value, _err := NewValue(name, v)
+	_property, _err := NewProperty(name, v)
 
-	return &list{_value, _list}, _err
+	return &list{_property, _list}, _err
 } // NewList()
 
 func (l list) List() ([]string, bool) { return l.l, true }
 
 type integer struct {
-	Value
+	Property
 	i int
 }
 
-func NewInt(name, v string) (Value, Error) {
-	// attempt to parse the integer value
-	//		- NewValue() should never return an error
+func NewInt(name, v string) (Property, Error) {
+	// attempt to parse the integer property
+	//		- NewProperty() should never return an error
 	_int, _err := strconv.Atoi(v)
 	if _err != nil {
 		return nil, NewError(name, InvalidIntegerError)
 	}
-	_value, _error := NewValue(name, v)
+	_property, _error := NewProperty(name, v)
 
-	return &integer{_value, _int}, _error
+	return &integer{_property, _int}, _error
 } // NewInt()
 
 func (i integer) Int() (int, bool) { return i.i, true }

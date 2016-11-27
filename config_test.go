@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	_ALL    []gitconfig.Value
+	_ALL    []gitconfig.Property
 	_ORDER  []string
 	_STRING = "" +
 		"b.b=1\n" +
@@ -36,15 +36,15 @@ var (
 		"l.i=false\n" +
 		"l.j=a:b:c\n" +
 		"l.k=:b:\n" +
-		"v.a=?\n" +
-		"v.b=1\n" +
-		"v.c=on\n" +
-		"v.d=yes\n" +
-		"v.e=true\n" +
-		"v.f=0\n" +
-		"v.g=off\n" +
-		"v.h=no\n" +
-		"v.i=false\n"
+		"p.a=?\n" +
+		"p.b=1\n" +
+		"p.c=on\n" +
+		"p.d=yes\n" +
+		"p.e=true\n" +
+		"p.f=0\n" +
+		"p.g=off\n" +
+		"p.h=no\n" +
+		"p.i=false\n"
 )
 
 func TestNewConfig(t *testing.T) {
@@ -59,7 +59,7 @@ func TestConfigAll(t *testing.T) {
 	_config := gitconfig.NewConfig(_ALL)
 	_all := _config.All()
 
-	// ensure All() returns the correct number of values
+	// ensure All() returns the correct number of properties
 	if len(_all) != len(_ALL) {
 		t.Fatalf(
 			"unexpected size from All(); expected %d, got %d",
@@ -67,7 +67,7 @@ func TestConfigAll(t *testing.T) {
 		)
 	}
 	for _i, _got := range _all {
-		// compare the values by name
+		// compare the properties by name
 		//		- we compare other attributes later
 		_expected := _ORDER[_i]
 		if _got.Name() != _expected {
@@ -92,7 +92,7 @@ func TestConfigGet(t *testing.T) {
 			)
 		} else if _got == nil {
 			t.Fatalf(
-				"%q: unexpected nil value; expected %v",
+				"%q: unexpected nil property; expected %v",
 				_expected.Name(), _expected,
 			)
 		} else if _got.Name() != _expected.Name() {
@@ -119,7 +119,7 @@ func TestConfigGet(t *testing.T) {
 			)
 		} else if _got != nil {
 			t.Fatalf(
-				"%q: unexpected Get() value; expected nil, got %v",
+				"%q: unexpected Get() property; expected nil, got %v",
 				_get, _got.Name(),
 			)
 		}
@@ -128,10 +128,10 @@ func TestConfigGet(t *testing.T) {
 
 func TestConfigFind(t *testing.T) {
 	// ensure Find() behaves
-	find(_VALUE, "v.", t)
-	find(_BOOL, "b.", t)
-	find(_INT, "i.", t)
-	find(_LIST, "l.", t)
+	find(_PROPERTIES, "p.", t)
+	find(_BOOLS, "b.", t)
+	find(_INTS, "i.", t)
+	find(_LISTS, "l.", t)
 } // TestConfigFind()
 
 func TestConfigString(t *testing.T) {
@@ -147,35 +147,35 @@ func TestConfigString(t *testing.T) {
 			_STRING, _string,
 		)
 	} else if _string != _config.String() {
-		t.Fatal("unexpected string; expected same value, got different")
+		t.Fatal("unexpected string; expected same property, got different")
 	}
 } // TestConfigString()
 
 func init() {
-	// combine all value tests into a single list
-	_all := make([]*vtest, 0)
-	_all = append(_all, _BOOL...)
-	_all = append(_all, _INT...)
-	_all = append(_all, _LIST...)
-	_all = append(_all, _VALUE...)
+	// combine all property tests into a single list
+	_all := make([]*ptest, 0)
+	_all = append(_all, _BOOLS...)
+	_all = append(_all, _INTS...)
+	_all = append(_all, _LISTS...)
+	_all = append(_all, _PROPERTIES...)
 
-	// build the list of all values
-	_ALL = make([]gitconfig.Value, 0)
-	for _, _v := range _all {
-		if _v.v != nil {
-			_ALL = append(_ALL, _v.v)
+	// build the list of all properties
+	_ALL = make([]gitconfig.Property, 0)
+	for _, _p := range _all {
+		if _p.p != nil {
+			_ALL = append(_ALL, _p.p)
 		}
 	}
 
 	// generate the expected order
-	//		- this is the sort order of the value names
+	//		- this is the sort order of the property names
 	_ORDER = make([]string, 0, len(_ALL))
-	for _, _v := range _ALL {
-		_ORDER = append(_ORDER, _v.Name())
+	for _, _p := range _ALL {
+		_ORDER = append(_ORDER, _p.Name())
 	}
 	sort.Strings(_ORDER)
 
-	// generate a random permutation of all test values
+	// generate a random permutation of all test properties
 	rand.Seed(time.Now().UnixNano())
 	for _i := range _ALL {
 		_j := rand.Intn(_i + 1)
@@ -187,13 +187,13 @@ func init() {
 // helper function
 //
 
-func find(tests []*vtest, prefix string, t *testing.T) {
+func find(tests []*ptest, prefix string, t *testing.T) {
 	// build a map of the results expected for these tests
 	//		- extract the
-	_map := make(map[string]gitconfig.Value)
+	_map := make(map[string]gitconfig.Property)
 	for _, _test := range tests {
-		if _test.v != nil {
-			_map[_test.n] = _test.v
+		if _test.p != nil {
+			_map[_test.n] = _test.p
 		}
 	}
 
@@ -220,17 +220,17 @@ func find(tests []*vtest, prefix string, t *testing.T) {
 	}
 
 	// finally, Find() should behave just as Get() when given an exact match
-	for _, _value := range _ALL {
-		_find := _config.Find(_value.Name())
+	for _, _property := range _ALL {
+		_find := _config.Find(_property.Name())
 		if len(_find) != 1 {
 			t.Fatalf(
 				"%q: unexpected Find(); expected %d results, got %d",
-				_value.Name(), 1, len(_find),
+				_property.Name(), 1, len(_find),
 			)
-		} else if _find[0].Name() != _value.Name() {
+		} else if _find[0].Name() != _property.Name() {
 			t.Fatalf(
 				"%q: unexpected Find(); expected %q, got %q",
-				_value.Name(), _value.Name(), _find[0].Name(),
+				_property.Name(), _property.Name(), _find[0].Name(),
 			)
 		}
 	}
