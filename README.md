@@ -12,7 +12,7 @@ See https://git-scm.com/docs/git-config for more information.
 import "github.com/denormal/go-gitconfig"
 
 // load the git configuration for a particular repository
-config, err := gitconfig.NewGitConfig("/my/git/working/copy")
+config, err := gitconfig.New("/my/git/working/copy")
 if err != nil {
     panic(err)
 }
