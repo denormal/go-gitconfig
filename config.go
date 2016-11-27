@@ -37,14 +37,19 @@ type config struct {
 }
 
 // NewConfig returns the configuration instance for the list of configuration
-// properties p.
+// properties p. If p contains properties with the same name, the property
+// listed last will be the property set in the returned Config instance.
 func NewConfig(p []Property) Config {
 	// build the name -> property lookup as well as the "all" list
 	c := &config{}
 	c.c = make(map[string]Property)
-	c.all = make([]Property, 0)
 	for _, _p := range p {
 		c.c[_p.Name()] = _p
+	}
+
+	// extract the uniquely named properties
+	c.all = make([]Property, 0)
+	for _, _p := range c.c {
 		c.all = append(c.all, _p)
 	}
 

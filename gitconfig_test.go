@@ -84,9 +84,6 @@ func TestGitConfigLocal(t *testing.T) {
 
 		// ensure Local() behaves as expected
 		_local := _config.Local()
-		if _local == nil {
-			t.Fatal("unexpected nil from GitConfig.Local()")
-		}
 
 		// if we're in a working copy, then we should attempt to retrieve the
 		// local configuration manually and compare the two
@@ -113,8 +110,27 @@ func TestGitConfigLocal(t *testing.T) {
 					"config mismatch; expected %d items, found %d",
 					len(_local.All()), len(_l.All()),
 				)
+			} else {
+				// ensure the retrieved properties are the same
+				_properties := _l.All()
+				for _i, _got := range _local.All() {
+					_expected := _properties[_i]
+					if _got.Name() != _expected.Name() {
+						t.Fatalf(
+							"property name mismatch; "+
+								"expected %q, got %q at index %d",
+							_expected.Name(), _got.Name(), _i,
+						)
+					} else if _got.String() != _expected.String() {
+						t.Fatalf(
+							"property name mismatch; "+
+								"expected %q, got %q at index %d",
+							_expected.String(), _got.String(), _i,
+						)
+					}
+				}
 			}
-		} else if len(_local.All()) != 0 {
+		} else if _local != nil {
 			t.Fatalf(
 				"%q: expected no local config; found %d items",
 				_path, len(_local.All()),

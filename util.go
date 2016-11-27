@@ -41,6 +41,7 @@ func InWorkingCopy() (bool, error) {
 } // InWorkingCopy()
 
 // IsWorkingCopy returns true if path is within a git working copy.
+// If path is "", the current working directory of the process will be used.
 func IsWorkingCopy(path string) (bool, error) {
 	_output, _err := execute(path, _ISWORKING)
 	if _err == nil {
@@ -75,7 +76,8 @@ func IsWorkingCopy(path string) (bool, error) {
 } // IsWorkingCopy()
 
 // WorkingCopy returns the root of the working copy to which path belongs, if
-// path is within a git working copy.
+// path is within a git working copy. If path is "", the current working
+// directory of the process will be used.
 func WorkingCopy(path string) (string, error) {
 	_output, _err := execute(path, _WORKING)
 	if _err == nil {
@@ -105,7 +107,8 @@ func WorkingCopy(path string) (string, error) {
 
 // GitDir returns the git directory for the working copy in which path is
 // located, or an error if the path cannot be resolved, or is not located
-// within a working copy.
+// within a working copy. If path is "", the current working directory of
+// the process will be used.
 func GitDir(path string) (string, error) {
 	// attempt to resolve the .git directory within the given path hierarchy
 	_output, _err := execute(path, _DIR)

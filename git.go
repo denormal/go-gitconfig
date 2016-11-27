@@ -6,8 +6,10 @@ import (
 
 var _CONFIG = []string{"config", "--list"}
 
-// NewLocalConfig returns the Config instance for the local git configuration.
-// If there is a problem extracting this configuration, and Error is returned.
+// NewLocalConfig returns the Config instance for the local git configuration,
+// for the repository represented by path. If there is a problem extracting
+// this configuration, and Error is returned. If path is "", the current
+// working directory of the process will be used.
 func NewLocalConfig(path string) (Config, error) {
 	return get(path, "--local")
 } // getLocal()
