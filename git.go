@@ -6,6 +6,8 @@ import (
 
 var _CONFIG = []string{"config", "--list"}
 
+// NewLocalConfig returns the Config instance for the local git configuration.
+// If there is a problem extracting this configuration, and Error is returned.
 func NewLocalConfig(path string) (Config, Error) {
 	// attempt to retrieve the local configuration
 	_properties, _err := get(path, "--local")
@@ -16,6 +18,8 @@ func NewLocalConfig(path string) (Config, Error) {
 	return NewConfig(_properties), nil
 } // getLocal()
 
+// NewSystemConfig returns the Config instance for the system git configuration.
+// If there is a problem extracting this configuration, and Error is returned.
 func NewSystemConfig() (Config, Error) {
 	_properties, _err := get("", "--system")
 	if _err != nil {
@@ -25,6 +29,8 @@ func NewSystemConfig() (Config, Error) {
 	return NewConfig(_properties), nil
 } // NewSystemConfig()
 
+// NewGlobalConfig returns the Config instance for the global git configuration.
+// If there is a problem extracting this configuration, and Error is returned.
 func NewGlobalConfig() (Config, Error) {
 	_properties, _err := get("", "--global")
 	if _err != nil {
@@ -38,6 +44,9 @@ func NewGlobalConfig() (Config, Error) {
 // private functions
 //
 
+// get returns the list of configuration properties for the "git config"
+// command executed in the given path with the supplied flag. An Error is
+// returned if there is a problem executing git, or parsing a property.
 func get(path, flag string) ([]Property, Error) {
 	// add the flag to the argument list
 	_args := _CONFIG
