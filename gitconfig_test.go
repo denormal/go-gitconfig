@@ -360,13 +360,8 @@ func TestGitConfigGet(t *testing.T) {
 
 		// ensure we can Get() all properties returned by All()
 		for _, _expected := range _config.All() {
-			_got, _ok := _config.Get(_expected.Name())
-			if !_ok {
-				t.Fatalf(
-					"%q: unexpected Get() failure; expected %v, got %v",
-					_expected.Name(), true, _ok,
-				)
-			} else if _got == nil {
+			_got := _config.Get(_expected.Name())
+			if _got == nil {
 				t.Fatalf(
 					"%q: unexpected nil property; expected %v",
 					_expected.Name(), _expected,
@@ -387,13 +382,8 @@ func TestGitConfigGet(t *testing.T) {
 		// ensure Get() behaves as expected when given unknown names
 		for _, _property := range _config.All() {
 			_get := _property.Name() + time.Now().String()
-			_got, _ok := _config.Get(_get)
-			if _ok {
-				t.Fatalf(
-					"%q: unexpected Get() success; expected %v, got %v",
-					_get, false, _ok,
-				)
-			} else if _got != nil {
+			_got := _config.Get(_get)
+			if _got != nil {
 				t.Fatalf(
 					"%q: unexpected Get() property; expected nil, got %v",
 					_get, _got.Name(),

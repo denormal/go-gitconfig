@@ -14,9 +14,9 @@ type Config interface {
 	All() []Property
 
 	// Get attempts to retrieve the property with the specified name from the
-	// current configuration, returning the property and ok set to true if it
-	// exists. Otherwise, ok will be false.
-	Get(name string) (property Property, ok bool)
+	// current configuration, returning the property or nil if no property with
+	// that name is found.
+	Get(name string) Property
 
 	// Find returns the list of all configuration properties with names matching
 	// the given pattern. If the pattern ends with "*", the rest of the pattern
@@ -61,11 +61,15 @@ func (c config) All() []Property {
 } // All()
 
 // Get attempts to retrieve the property with the specified name from the
-// current configuration, returning the property and ok set to true if it
-// exists. Otherwise, ok will be false.
-func (c config) Get(name string) (Property, bool) {
+// current configuration, returning the property or nil if no property with
+// that name is found.
+func (c config) Get(name string) Property {
 	_property, _ok := c.c[name]
-	return _property, _ok
+	if _ok {
+		return _property
+	} else {
+		return nil
+	}
 } // Get()
 
 // Find returns the list of all configuration properties with names matching
@@ -77,8 +81,8 @@ func (c config) Find(pattern string) []Property {
 	// does the pattern end in "*"?
 	//		- if not, then this is just a Get() call in disguise
 	if !strings.HasSuffix(pattern, "*") {
-		_property, _ok := c.Get(pattern)
-		if _ok {
+		_property := c.Get(pattern)
+		if _property != nil {
 			return []Property{_property}
 		} else {
 			return []Property{}

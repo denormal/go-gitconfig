@@ -104,18 +104,21 @@ func (g gc) All() []Property {
 } // All()
 
 // Get attempts to retrieve the property with the specified name from the
-// current configuration, returning the property and ok set to true if it
-// exists. Otherwise, ok will be false.
-func (g gc) Get(name string) (Property, bool) {
-	_property, _ok := g.Local().Get(name)
-	if !_ok {
-		_property, _ok = g.Global().Get(name)
-		if !_ok {
-			_property, _ok = g.System().Get(name)
+// current configuration, returning the property if found, otherwise
+// returning nil.
+func (g gc) Get(name string) Property {
+	_property := g.Local().Get(name)
+	if _property == nil {
+		_property = g.Global().Get(name)
+		if _property == nil {
+			_property = g.System().Get(name)
+			if _property == nil {
+				return nil
+			}
 		}
 	}
 
-	return _property, _ok
+	return _property
 } // Get()
 
 // Find returns the list of all configuration properties with names matching
