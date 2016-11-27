@@ -9,6 +9,10 @@ import (
 var (
 	InvalidBooleanError = errors.New("invalid boolean value")
 	InvalidIntegerError = errors.New("invalid integer value")
+
+	// true and false values for boolean properties
+	_True  = true
+	_False = false
 )
 
 // Property represents the name/value pair for a configuration property.
@@ -20,27 +24,30 @@ type Property interface {
 	String() string
 
 	// Bool returns the boolean value of the property. If the property value
-	// is not a valid boolean, ok will be false.
-	Bool() (value bool, ok bool)
+	// is not a valid boolean, an error will be returned.
+	Bool() (bool, error)
 
 	// List returns the list representation of the property. List splits the
-	// string representation of the property value at colons (":").
+	// string representation of the property value at colons ":".
 	List() []string
 
 	// Int returns the integer representation of the property. If the property
-	// value is not a valid integer, ok will be false.
-	Int() (int, bool)
+	// value is not a valid integer, an error will be returned.
+	Int() (int, error)
 }
 
 // property is the implementation of the Property interface.
 type property struct {
 	name string
 	v    string
+	b    *bool
+	i    *int
+	l    []string
 }
 
 // NewProperty returns a Property instance with the given name and value v.
 func NewProperty(name, v string) Property {
-	return &property{name, v}
+	return &property{name: name, v: v}
 } // NewProperty()
 
 // Name returns the name of the property.
@@ -50,46 +57,51 @@ func (p property) Name() string { return p.name }
 func (p property) String() string { return p.v }
 
 // Bool returns the boolean value of the property. If the property value
-// is not a valid boolean, the second return value will be false.
-func (p property) Bool() (bool, bool) {
-	// can we convert this property into a boolean?
-	_bool, _err := NewBool(p.name, p.v)
-	if _err != nil {
-		return false, false
+// is not a valid boolean, Bool returns the InvalidBooleanError.
+func (p property) Bool() (bool, error) {
+	if p.b == nil {
+		p.b = boolean(p.v)
+	}
+
+	if p.b == nil {
+		return false, InvalidBooleanError
 	} else {
-		return _bool.Bool()
+		return *p.b, nil
 	}
 } // Bool()
 
 // List returns the list representation of the property. List splits the
-// string representation of the property value at colons (":").
+// string representation of the property value at colons ":".
 func (p property) List() []string {
-	// convert this property into a boolean?
-	return NewList(p.name, p.v).List()
+	if p.l == nil {
+		p.l = list(p.v)
+	}
+
+	return p.l
 } // List()
 
 // Int returns the integer representation of the property. If the property
-// value is not a valid integer, the second return value will be false.
-func (p property) Int() (int, bool) {
-	// can we convert this property into an integer?
-	_int, _err := NewInt(p.name, p.v)
-	if _err != nil {
-		return 0, false
+// value is not a valid integer, Int returns the InvalidIntegerError.
+func (p property) Int() (int, error) {
+	if p.i == nil {
+		p.i = integer(p.v)
+	}
+
+	if p.i == nil {
+		return 0, InvalidIntegerError
 	} else {
-		return _int.Int()
+		return *p.i, nil
 	}
 } // Int()
 
-// boolean is the implementation of a boolean property
-type boolean struct {
-	Property
-	b bool
-}
+//
+// helper methods
+//
 
-// NewBool returns a property representing a boolean value. If the string v
-// is not a valid boolean (e.g. "1", "on", "false", "no", etc) NewBool will
-// return an error.
-func NewBool(name, v string) (Property, error) {
+// boolean converts the given string v into a boolean, if the string represnts
+// a valid boolean value (such as "1", "true", "off", "no", etc). boolean
+// returns nil otherwise.
+func boolean(v string) *bool {
 	switch v {
 	// true cases
 	case "1":
@@ -99,9 +111,7 @@ func NewBool(name, v string) (Property, error) {
 	case "yes":
 		fallthrough
 	case "true":
-		// NewProperty() should never return an error
-		_property := NewProperty(name, v)
-		return &boolean{_property, true}, nil
+		return &_True
 
 	// false cases
 	case "0":
@@ -111,55 +121,28 @@ func NewBool(name, v string) (Property, error) {
 	case "no":
 		fallthrough
 	case "false":
-		// NewProperty() should never return an error
-		_property := NewProperty(name, v)
-		return &boolean{_property, false}, nil
+		return &_False
 	}
 
-	return nil, InvalidBooleanError
-} // NewBool()
+	//	return nil, InvalidBooleanError
+	return nil
+} // boolean()
 
-// Bool returns the boolean value for the boolean property.
-func (b boolean) Bool() (bool, bool) { return b.b, true }
-
-// list is the implementation of a list property.
-type list struct {
-	Property
-	l []string
-}
-
-// NewList returns a property representing a list value. The value string v
-// is split on colons (":").
-func NewList(name, v string) Property {
+// list returns the list representation of the value string s. Values are split
+// on colons ":".
+func list(v string) []string {
 	// split the string on ":"
-	//		- NewProperty() should never return an error
-	_list := strings.Split(v, ":")
-	_property := NewProperty(name, v)
+	return strings.Split(v, ":")
+} // list()
 
-	return &list{_property, _list}
-} // NewList()
-
-// List returns the list representation of the list property.
-func (l list) List() []string { return l.l }
-
-// integer is the implementation of an integer property.
-type integer struct {
-	Property
-	i int
-}
-
-// NewInt returns a property representing an integer value.
-func NewInt(name, v string) (Property, error) {
+// integer converts the given string v into an integer, if the string
+// represents a valid integer value. integer returns nil otherwise.
+func integer(v string) *int {
 	// attempt to parse the integer property
-	//		- NewProperty() should never return an error
 	_int, _err := strconv.Atoi(v)
-	if _err != nil {
-		return nil, InvalidIntegerError
+	if _err == nil {
+		return &_int
+	} else {
+		return nil
 	}
-	_property := NewProperty(name, v)
-
-	return &integer{_property, _int}, nil
-} // NewInt()
-
-// Int returns the integer representation of an integer property.
-func (i integer) Int() (int, bool) { return i.i, true }
+} // integer()

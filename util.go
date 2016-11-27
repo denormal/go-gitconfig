@@ -59,6 +59,12 @@ func IsWorkingCopy(path string) (bool, error) {
 
 	// do we have git installed?
 	//		- if we do, then we interpret the error as a missing working copy
+	//		- this is a little dangerous, as other problems could be the cause
+	//		  of the error, such as changes to the "git" API
+	//		- however, this does give a better user experience at present
+	//		- interrogating child process exist codes is difficult across
+	//		  platforms, so for now we take this simplistic approach
+	//		- it also saves having a dependency on "git" exit codes
 	_has, _ := HasGit()
 	if _has {
 		return false, MissingWorkingCopyError

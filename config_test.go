@@ -13,38 +13,19 @@ var (
 	_ALL    []gitconfig.Property
 	_ORDER  []string
 	_STRING = "" +
-		"b.b=1\n" +
-		"b.c=on\n" +
-		"b.d=yes\n" +
-		"b.e=true\n" +
-		"b.f=0\n" +
-		"b.g=off\n" +
-		"b.h=no\n" +
-		"b.i=false\n" +
-		"i.b=1\n" +
-		"i.d=0\n" +
-		"i.f=-123\n" +
-		"i.g=1234\n" +
-		"l.a=?\n" +
-		"l.b=1\n" +
-		"l.c=on\n" +
-		"l.d=yes\n" +
-		"l.e=true\n" +
-		"l.f=0\n" +
-		"l.g=off\n" +
-		"l.h=no\n" +
-		"l.i=false\n" +
-		"l.j=a:b:c\n" +
-		"l.k=:b:\n" +
-		"p.a=?\n" +
-		"p.b=1\n" +
-		"p.c=on\n" +
-		"p.d=yes\n" +
-		"p.e=true\n" +
-		"p.f=0\n" +
-		"p.g=off\n" +
+		"p.a=-123\n" +
+		"p.b=1234\n" +
+		"p.c=:b:\n" +
+		"p.d=?\n" +
+		"p.f=a:b:c\n" +
+		"p.g=0\n" +
 		"p.h=no\n" +
-		"p.i=false\n"
+		"p.i=off\n" +
+		"p.j=false\n" +
+		"p.k=1\n" +
+		"p.l=on\n" +
+		"p.m=yes\n" +
+		"p.n=true\n"
 )
 
 func TestNewConfig(t *testing.T) {
@@ -129,9 +110,6 @@ func TestConfigGet(t *testing.T) {
 func TestConfigFind(t *testing.T) {
 	// ensure Find() behaves
 	find(_PROPERTIES, "p.", t)
-	find(_BOOLS, "b.", t)
-	find(_INTS, "i.", t)
-	find(_LISTS, "l.", t)
 } // TestConfigFind()
 
 func TestConfigString(t *testing.T) {
@@ -152,16 +130,9 @@ func TestConfigString(t *testing.T) {
 } // TestConfigString()
 
 func init() {
-	// combine all property tests into a single list
-	_all := make([]*ptest, 0)
-	_all = append(_all, _BOOLS...)
-	_all = append(_all, _INTS...)
-	_all = append(_all, _LISTS...)
-	_all = append(_all, _PROPERTIES...)
-
 	// build the list of all properties
 	_ALL = make([]gitconfig.Property, 0)
-	for _, _p := range _all {
+	for _, _p := range _PROPERTIES {
 		if _p.p != nil {
 			_ALL = append(_ALL, _p.p)
 		}
