@@ -96,7 +96,7 @@ func (g gc) All() []Property {
 			}
 		}
 
-		sort.Sort(Properties(_rtn))
+		sort.Sort(properties(_rtn))
 		g.all = _rtn
 	}
 
@@ -140,7 +140,7 @@ func (g gc) Find(pattern string) []Property {
 	}
 
 	// sort the return properties to make Find() predictable
-	sort.Sort(Properties(_rtn))
+	sort.Sort(properties(_rtn))
 
 	return _rtn
 } // Find()

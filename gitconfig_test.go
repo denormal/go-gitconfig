@@ -305,7 +305,7 @@ func TestGitConfigAll(t *testing.T) {
 		for _, _property := range _map {
 			_expect = append(_expect, _property)
 		}
-		sort.Sort(gitconfig.Properties(_expect))
+		sort.Sort(properties(_expect))
 
 		// ensure All() returns the expected properties
 		_all := _config.All()
@@ -612,9 +612,9 @@ func lookup(content string) map[string]bool {
 	return _map
 } // lookup()
 
-func prefixes(properties []gitconfig.Property) map[string][]gitconfig.Property {
+func prefixes(p []gitconfig.Property) map[string][]gitconfig.Property {
 	_map := make(map[string][]gitconfig.Property)
-	for _, _property := range properties {
+	for _, _property := range p {
 		_prefix := prefix(_property.Name())
 		_, _ok := _map[_prefix]
 		if !_ok {
@@ -625,7 +625,7 @@ func prefixes(properties []gitconfig.Property) map[string][]gitconfig.Property {
 
 	// sort the expected return properties
 	for _, _list := range _map {
-		sort.Sort(gitconfig.Properties(_list))
+		sort.Sort(properties(_list))
 	}
 
 	return _map
@@ -635,3 +635,11 @@ func prefix(name string) string {
 	_parts := strings.Split(name, ".")
 	return _parts[0] + ".*"
 } // prefix()
+
+// helper class for sorting properties
+//		- this helps validate the implementation of gitconfig.properties
+type properties []gitconfig.Property
+
+func (p properties) Len() int           { return len([]gitconfig.Property(p)) }
+func (p properties) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p properties) Less(i, j int) bool { return p[i].Name() < p[j].Name() }

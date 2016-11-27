@@ -49,7 +49,7 @@ func NewConfig(p []Property) Config {
 	}
 
 	// sort the "all" list of properties
-	sort.Sort(Properties(c.all))
+	sort.Sort(properties(c.all))
 
 	return c
 } // NewConfig()
