@@ -31,7 +31,7 @@ type gc struct {
 // properties.
 //
 // If path is "", the current working directory of the process will be used.
-func NewGitConfig(path string) (GitConfig, error) {
+func New(path string) (GitConfig, error) {
 	var _local Config
 
 	// are we in a git repository?
@@ -70,7 +70,7 @@ func NewGitConfig(path string) (GitConfig, error) {
 	_config := NewConfig(_all)
 
 	return &gc{_config, _local, _system, _global}, nil
-} // NewGitConfig()
+} // New()
 
 // Local returns the local git configuration for the git working copy.
 // If this GitConfig does not represent a working copy, Local will return nil.

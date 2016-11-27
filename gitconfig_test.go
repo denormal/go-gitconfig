@@ -12,7 +12,7 @@ import (
 )
 
 func TestGitConfig(t *testing.T) {
-	// ensure NewGitConfig() works as expected
+	// ensure New() works as expected
 	//		- the current directory should be a working copy
 	//		- these tests should work with current drectory and ""
 	_cwd, _err := os.Getwd()
@@ -24,18 +24,18 @@ func TestGitConfig(t *testing.T) {
 	}
 
 	for _, _path := range []string{_cwd, ""} {
-		_config, _err := gitconfig.NewGitConfig(_path)
+		_config, _err := gitconfig.New(_path)
 		if _err != nil {
 			t.Fatalf(
-				"%q: unexpected error from NewGitConfig: %s",
+				"%q: unexpected error from New: %s",
 				_path, _err.Error(),
 			)
 		} else if _config == nil {
-			t.Fatalf("%q: unexpected nil from NewGitConfig", _path)
+			t.Fatalf("%q: unexpected nil from New", _path)
 		}
 	}
 
-	// ensure NewGitConfig() works with a temporary directory that is
+	// ensure New() works with a temporary directory that is
 	// not a part of a working copy
 	_dir, _err := ioutil.TempDir("", "")
 	if _err != nil {
@@ -46,14 +46,14 @@ func TestGitConfig(t *testing.T) {
 	}
 	defer os.RemoveAll(_dir)
 
-	_config, _err := gitconfig.NewGitConfig(_dir)
+	_config, _err := gitconfig.New(_dir)
 	if _err != nil {
 		t.Fatalf(
-			"%q: unexpected error from NewGitConfig: %s",
+			"%q: unexpected error from New: %s",
 			_dir, _err.Error(),
 		)
 	} else if _config == nil {
-		t.Fatalf("%q: unexpected nil from NewGitConfig", _dir)
+		t.Fatalf("%q: unexpected nil from New", _dir)
 	}
 
 } // TestGitConfig()
@@ -72,14 +72,14 @@ func TestGitConfigLocal(t *testing.T) {
 	defer os.RemoveAll(_dir)
 
 	for _, _path := range []string{"", _dir} {
-		_config, _err := gitconfig.NewGitConfig(_path)
+		_config, _err := gitconfig.New(_path)
 		if _err != nil {
 			t.Fatalf(
-				"%q: unexpected error from NewGitConfig: %s",
+				"%q: unexpected error from New: %s",
 				_path, _err.Error(),
 			)
 		} else if _config == nil {
-			t.Fatalf("%q: unexpected nil from NewGitConfig", _path)
+			t.Fatalf("%q: unexpected nil from New", _path)
 		}
 
 		// ensure Local() behaves as expected
@@ -153,14 +153,14 @@ func TestGitConfigGlobal(t *testing.T) {
 	defer os.RemoveAll(_dir)
 
 	for _, _path := range []string{"", _dir} {
-		_config, _err := gitconfig.NewGitConfig(_path)
+		_config, _err := gitconfig.New(_path)
 		if _err != nil {
 			t.Fatalf(
-				"%q: unexpected error from NewGitConfig: %s",
+				"%q: unexpected error from New: %s",
 				_path, _err.Error(),
 			)
 		} else if _config == nil {
-			t.Fatalf("%q: unexpected nil from NewGitConfig", _path)
+			t.Fatalf("%q: unexpected nil from New", _path)
 		}
 
 		// ensure Global() behaves as expected
@@ -221,14 +221,14 @@ func TestGitConfigSystem(t *testing.T) {
 	defer os.RemoveAll(_dir)
 
 	for _, _path := range []string{"", _dir} {
-		_config, _err := gitconfig.NewGitConfig(_path)
+		_config, _err := gitconfig.New(_path)
 		if _err != nil {
 			t.Fatalf(
-				"%q: unexpected error from NewGitConfig: %s",
+				"%q: unexpected error from New: %s",
 				_path, _err.Error(),
 			)
 		} else if _config == nil {
-			t.Fatalf("%q: unexpected nil from NewGitConfig", _path)
+			t.Fatalf("%q: unexpected nil from New", _path)
 		}
 
 		// ensure System() behaves as expected
@@ -289,14 +289,14 @@ func TestGitConfigAll(t *testing.T) {
 	defer os.RemoveAll(_dir)
 
 	for _, _path := range []string{"", _dir} {
-		_config, _err := gitconfig.NewGitConfig(_path)
+		_config, _err := gitconfig.New(_path)
 		if _err != nil {
 			t.Fatalf(
-				"%q: unexpected error from NewGitConfig: %s",
+				"%q: unexpected error from New: %s",
 				_path, _err.Error(),
 			)
 		} else if _config == nil {
-			t.Fatalf("%q: unexpected nil from NewGitConfig", _path)
+			t.Fatalf("%q: unexpected nil from New", _path)
 		}
 
 		// manually retrieve the local, global & system configs
@@ -364,14 +364,14 @@ func TestGitConfigGet(t *testing.T) {
 	defer os.RemoveAll(_dir)
 
 	for _, _path := range []string{"", _dir} {
-		_config, _err := gitconfig.NewGitConfig(_path)
+		_config, _err := gitconfig.New(_path)
 		if _err != nil {
 			t.Fatalf(
-				"%q: unexpected error from NewGitConfig: %s",
+				"%q: unexpected error from New: %s",
 				_path, _err.Error(),
 			)
 		} else if _config == nil {
-			t.Fatalf("%q: unexpected nil from NewGitConfig", _path)
+			t.Fatalf("%q: unexpected nil from New", _path)
 		}
 
 		// ensure we can Get() all properties returned by All()
@@ -423,14 +423,14 @@ func TestGitConfigFind(t *testing.T) {
 	defer os.RemoveAll(_dir)
 
 	for _, _path := range []string{"", _dir} {
-		_config, _err := gitconfig.NewGitConfig(_path)
+		_config, _err := gitconfig.New(_path)
 		if _err != nil {
 			t.Fatalf(
-				"%q: unexpected error from NewGitConfig: %s",
+				"%q: unexpected error from New: %s",
 				_path, _err.Error(),
 			)
 		} else if _config == nil {
-			t.Fatalf("%q: unexpected nil from NewGitConfig", _path)
+			t.Fatalf("%q: unexpected nil from New", _path)
 		}
 
 		// first, ensure Find() behaves like Get() when given an exact match
@@ -506,14 +506,14 @@ func TestGitConfigString(t *testing.T) {
 	defer os.RemoveAll(_dir)
 
 	for _, _path := range []string{"", _dir} {
-		_config, _err := gitconfig.NewGitConfig(_path)
+		_config, _err := gitconfig.New(_path)
 		if _err != nil {
 			t.Fatalf(
-				"%q: unexpected error from NewGitConfig: %s",
+				"%q: unexpected error from New: %s",
 				_path, _err.Error(),
 			)
 		} else if _config == nil {
-			t.Fatalf("%q: unexpected nil from NewGitConfig", _path)
+			t.Fatalf("%q: unexpected nil from New", _path)
 		}
 
 		// ensure String() returns a non-empty string
