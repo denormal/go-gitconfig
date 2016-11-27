@@ -34,17 +34,14 @@ type gc struct {
 // of the GitConfig will be empty. An Error is returned if there is a problem
 // accessing the path, or if there is a a problem parsing the configuration
 // properties.
-func NewGitConfig(path string) (GitConfig, Error) {
-	var (
-		_local Config
-		_err   Error
-	)
+func NewGitConfig(path string) (GitConfig, error) {
+	var _local Config
 
 	// are we in a git repository?
-	_is, _error := IsWorkingCopy(path)
+	_is, _err := IsWorkingCopy(path)
 	if _err != nil {
 		if _err != MissingWorkingCopyError {
-			return nil, NewError("", _error)
+			return nil, _err
 		}
 	}
 

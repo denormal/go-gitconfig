@@ -88,8 +88,8 @@ type boolean struct {
 
 // NewBool returns a property representing a boolean value. If the string v
 // is not a valid boolean (e.g. "1", "on", "false", "no", etc) NewBool will
-// return an Error.
-func NewBool(name, v string) (Property, Error) {
+// return an error.
+func NewBool(name, v string) (Property, error) {
 	switch v {
 	// true cases
 	case "1":
@@ -116,7 +116,7 @@ func NewBool(name, v string) (Property, Error) {
 		return &boolean{_property, false}, nil
 	}
 
-	return nil, NewError(name, InvalidBooleanError)
+	return nil, InvalidBooleanError
 } // NewBool()
 
 // Bool returns the boolean value for the boolean property.
@@ -149,12 +149,12 @@ type integer struct {
 }
 
 // NewInt returns a property representing an integer value.
-func NewInt(name, v string) (Property, Error) {
+func NewInt(name, v string) (Property, error) {
 	// attempt to parse the integer property
 	//		- NewProperty() should never return an error
 	_int, _err := strconv.Atoi(v)
 	if _err != nil {
-		return nil, NewError(name, InvalidIntegerError)
+		return nil, InvalidIntegerError
 	}
 	_property := NewProperty(name, v)
 

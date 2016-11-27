@@ -14,7 +14,7 @@ type ptest struct {
 	s   string
 	l   []string
 	e   error
-	err gitconfig.Error
+	err error
 }
 
 func (p *ptest) Test(t *testing.T) {
@@ -25,7 +25,7 @@ func (p *ptest) Test(t *testing.T) {
 				"%q: expected New error %q; none found",
 				p.n, p.e.Error(),
 			)
-		} else if p.err.Underlying() != p.e {
+		} else if p.err != p.e {
 			t.Errorf(
 				"%q: New error mismatch; expected %q, got %q",
 				p.n, p.e.Error(), p.err.Error(),
