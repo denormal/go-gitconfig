@@ -1,4 +1,4 @@
-package gitconfig
+package gitconfig_test
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ func ExampleHasGit(t *testing.T) {
 
 func ExampleNew(t *testing.T) {
 	// attempt to load git configuration from within the current directory
-	config, err := gitconfig.New("")
+	config, err := gitconfig.New()
 	if err != nil {
 		fmt.Printf(
 			"error encountered loading git configuration: %s",

@@ -24,14 +24,24 @@ type gc struct {
 	global Config
 }
 
-// NewGitConfig returns a GitConfig instance representing the git working copy
+// New returns a GitConfig instance representing the git working copy in
+// the current working directory. If the current working directory is not
+// part of a git working copy, the local configuration of the GitConfig will
+// be nil. An error is returned if there is a problem accessing the current
+// working directory, or if there is a problem parsing the configuration
+// properties.
+func New() (GitConfig, error) {
+	return NewWithPath("")
+} // New()
+
+// NewWithPath returns a GitConfig instance representing the git working copy
 // path. If path is not part of a git working copy, the local configuration
-// of the GitConfig will be empty. An Error is returned if there is a problem
+// of the GitConfig will be nil. An error is returned if there is a problem
 // accessing the path, or if there is a problem parsing the configuration
 // properties.
 //
 // If path is "", the current working directory of the process will be used.
-func New(path string) (GitConfig, error) {
+func NewWithPath(path string) (GitConfig, error) {
 	var _local Config
 
 	// are we in a git repository?
