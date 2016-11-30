@@ -4,16 +4,17 @@ import (
 	"testing"
 
 	"github.com/denormal/go-gitconfig"
+	"github.com/denormal/go-gittools"
 )
 
 func TestNewLocalConfig(t *testing.T) {
 	// do we have git installed?
-	if !gitconfig.HasGit() {
+	if !gittools.HasGit() {
 		t.Skip("git not installed")
 	}
 
 	// are we in a git repository?
-	_is, _ := gitconfig.InWorkingCopy()
+	_is, _ := gittools.InWorkingCopy()
 	if _is {
 		_config, _err := gitconfig.NewLocalConfig("")
 		if _err != nil {
@@ -33,7 +34,7 @@ func TestNewLocalConfig(t *testing.T) {
 
 func TestNewGlobalConfig(t *testing.T) {
 	// do we have git installed?
-	if !gitconfig.HasGit() {
+	if !gittools.HasGit() {
 		t.Skip("git not installed")
 	}
 
@@ -48,7 +49,7 @@ func TestNewGlobalConfig(t *testing.T) {
 
 func TestNewSystemConfig(t *testing.T) {
 	// do we have git installed?
-	if !gitconfig.HasGit() {
+	if !gittools.HasGit() {
 		t.Skip("git not installed")
 	}
 

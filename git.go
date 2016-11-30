@@ -2,6 +2,8 @@ package gitconfig
 
 import (
 	"strings"
+
+	"github.com/denormal/go-gittools"
 )
 
 var _CONFIG = []string{"config", "--list"}
@@ -39,7 +41,7 @@ func gitconfig(path, flag string) (Config, error) {
 	_args = append(_args, flag)
 
 	// attempt to execute the "git config" command
-	_output, _err := Execute(path, _args...)
+	_output, _err := gittools.RunInPath(path, _args...)
 	if _err != nil {
 		return nil, _err
 	}

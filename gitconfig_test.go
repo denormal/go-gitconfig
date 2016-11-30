@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/denormal/go-gitconfig"
+	"github.com/denormal/go-gittools"
 )
 
 func TestNew(t *testing.T) {
@@ -98,9 +99,9 @@ func TestGitConfigLocal(t *testing.T) {
 
 		// if we're in a working copy, then we should attempt to retrieve the
 		// local configuration manually and compare the two
-		_is, _error := gitconfig.IsWorkingCopy(_path)
+		_is, _error := gittools.IsWorkingCopy(_path)
 		if _error != nil {
-			if _error != gitconfig.MissingWorkingCopyError {
+			if _error != gittools.MissingWorkingCopyError {
 				t.Fatalf(
 					"unexpected error from InWorkingCopy(): %s",
 					_error.Error(),
@@ -563,9 +564,9 @@ func lgs(t *testing.T, path string) (gitconfig.Config, gitconfig.Config, gitconf
 	//		- if we're not in a working copy, then we don't attempt to
 	//		  retrieve the local configuration
 	_local := gitconfig.NewConfig(nil)
-	_is, _error := gitconfig.IsWorkingCopy(path)
+	_is, _error := gittools.IsWorkingCopy(path)
 	if _error != nil {
-		if _error != gitconfig.MissingWorkingCopyError {
+		if _error != gittools.MissingWorkingCopyError {
 			t.Fatalf(
 				"unexpected error from InWorkingCopy(): %s",
 				_error.Error(),

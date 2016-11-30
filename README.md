@@ -4,9 +4,10 @@ Package `gitconfig` provides an interface to git configuration properties
 as returned by `"git config --list`. `gitconfig` provides access to local,
 global and system configuration, as well as the effective configuration
 for the given git working copy. `gitconfig` attempts to use the locally
-installed `git` executable.
+installed `git` executable via
+[go-gittools](https://github.com/denormal/go-gittools).
 
-See https://git-scm.com/docs/git-config for more information.
+See [git-config](https://git-scm.com/docs/git-config) for more information.
 
 ```go
 import "github.com/denormal/go-gitconfig"
@@ -28,10 +29,10 @@ For more information see `godoc github.com/denormal/go-gitconfig`.
 
 ## Installation
 
-`go-gitignore` can be installed using the standard Go approach:
+`go-gitconfig` can be installed using the standard Go approach:
 
 ```go
-go get github.com/denormal/go-gitignore
+go get github.com/denormal/go-gitconfig
 ```
 
 ## License

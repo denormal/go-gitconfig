@@ -1,5 +1,9 @@
 package gitconfig
 
+import (
+	"github.com/denormal/go-gittools"
+)
+
 // GitConfig is the interface to git configuration, encompassing local, global
 // and system configuration for a git working copy.
 type GitConfig interface {
@@ -45,9 +49,9 @@ func NewWithPath(path string) (GitConfig, error) {
 	var _local Config
 
 	// are we in a git repository?
-	_is, _err := IsWorkingCopy(path)
+	_is, _err := gittools.IsWorkingCopy(path)
 	if _err != nil {
-		if _err != MissingWorkingCopyError {
+		if _err != gittools.MissingWorkingCopyError {
 			return nil, _err
 		}
 	}
