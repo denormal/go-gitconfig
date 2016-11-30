@@ -11,35 +11,35 @@ var _CONFIG = []string{"config", "--list"}
 // this configuration, and Error is returned. If path is "", the current
 // working directory of the process will be used.
 func NewLocalConfig(path string) (Config, error) {
-	return get(path, "--local")
+	return gitconfig(path, "--local")
 } // getLocal()
 
 // NewSystemConfig returns the Config instance for the system git configuration.
 // If there is a problem extracting this configuration, and Error is returned.
 func NewSystemConfig() (Config, error) {
-	return get("", "--system")
+	return gitconfig("", "--system")
 } // NewSystemConfig()
 
 // NewGlobalConfig returns the Config instance for the global git configuration.
 // If there is a problem extracting this configuration, and Error is returned.
 func NewGlobalConfig() (Config, error) {
-	return get("", "--global")
+	return gitconfig("", "--global")
 } // NewGlobalConfig()
 
 //
 // private functions
 //
 
-// get returns the list of configuration properties for the "git config"
+// gitconfig returns the list of configuration properties for the "git config"
 // command executed in the given path with the supplied flag. An Error is
 // returned if there is a problem executing git, or parsing a property.
-func get(path, flag string) (Config, error) {
+func gitconfig(path, flag string) (Config, error) {
 	// add the flag to the argument list
 	_args := _CONFIG
 	_args = append(_args, flag)
 
 	// attempt to execute the "git config" command
-	_output, _err := execute(path, _args)
+	_output, _err := Execute(path, _args...)
 	if _err != nil {
 		return nil, _err
 	}
@@ -66,4 +66,4 @@ func get(path, flag string) (Config, error) {
 	}
 
 	return NewConfig(_properties), nil
-} // get()
+} // gitconfig()

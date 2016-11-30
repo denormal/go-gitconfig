@@ -8,8 +8,7 @@ import (
 
 func TestNewLocalConfig(t *testing.T) {
 	// do we have git installed?
-	_has, _ := gitconfig.HasGit()
-	if !_has {
+	if !gitconfig.HasGit() {
 		t.Skip("git not installed")
 	}
 
@@ -34,8 +33,7 @@ func TestNewLocalConfig(t *testing.T) {
 
 func TestNewGlobalConfig(t *testing.T) {
 	// do we have git installed?
-	_has, _ := gitconfig.HasGit()
-	if !_has {
+	if !gitconfig.HasGit() {
 		t.Skip("git not installed")
 	}
 
@@ -50,8 +48,7 @@ func TestNewGlobalConfig(t *testing.T) {
 
 func TestNewSystemConfig(t *testing.T) {
 	// do we have git installed?
-	_has, _ := gitconfig.HasGit()
-	if !_has {
+	if !gitconfig.HasGit() {
 		t.Skip("git not installed")
 	}
 

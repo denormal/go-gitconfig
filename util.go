@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -17,15 +18,29 @@ var (
 	MissingWorkingCopyError = errors.New("git working copy not found")
 )
 
-// HasGit returns true if the host system has git installed, and if the
-// git executable is located within the current user's PATH.
-func HasGit() (bool, error) {
-	_, _err := exec.LookPath(_EXE)
-	if _err != nil {
-		return false, _err
+// Git returns the absolute path to the locally installed git executable, if
+// found. Otherwise, Git will return an error.
+func Git() (string, error) {
+	_path, _err := exec.LookPath(_EXE)
+	if _err == nil {
+		_path, _err = filepath.Abs(_path)
+		if _err == nil {
+			return _path, _err
+		}
 	}
 
-	return true, nil
+	return "", _err
+} // Git()
+
+// HasGit returns true if the host system has git installed and if the
+// git executable is located within the current user's PATH.
+func HasGit() bool {
+	_path, _ := Git()
+	if _path != "" {
+		return true
+	} else {
+		return false
+	}
 } // HasGit()
 
 // InWorkingCopy returns true if the current directory is within a git
@@ -43,7 +58,7 @@ func InWorkingCopy() (bool, error) {
 // IsWorkingCopy returns true if path is within a git working copy.
 // If path is "", the current working directory of the process will be used.
 func IsWorkingCopy(path string) (bool, error) {
-	_output, _err := execute(path, _ISWORKING)
+	_output, _err := Execute(path, _ISWORKING...)
 	if _err == nil {
 		_lines := strings.Split(string(_output), "\n")
 		for _, _line := range _lines {
@@ -66,8 +81,7 @@ func IsWorkingCopy(path string) (bool, error) {
 	//		- interrogating child process exist codes is difficult across
 	//		  platforms, so for now we take this simplistic approach
 	//		- it also saves having a dependency on "git" exit codes
-	_has, _ := HasGit()
-	if _has {
+	if HasGit() {
 		return false, MissingWorkingCopyError
 	}
 
@@ -79,7 +93,7 @@ func IsWorkingCopy(path string) (bool, error) {
 // path is within a git working copy. If path is "", the current working
 // directory of the process will be used.
 func WorkingCopy(path string) (string, error) {
-	_output, _err := execute(path, _WORKING)
+	_output, _err := Execute(path, _WORKING...)
 	if _err == nil {
 		_lines := strings.Split(string(_output), "\n")
 		for _, _line := range _lines {
@@ -96,8 +110,7 @@ func WorkingCopy(path string) (string, error) {
 
 	// do we have git installed?
 	//		- if we do, then we interpret the error as a missing working copy
-	_has, _ := HasGit()
-	if _has {
+	if HasGit() {
 		return "", MissingWorkingCopyError
 	}
 
@@ -111,7 +124,7 @@ func WorkingCopy(path string) (string, error) {
 // the process will be used.
 func GitDir(path string) (string, error) {
 	// attempt to resolve the .git directory within the given path hierarchy
-	_output, _err := execute(path, _DIR)
+	_output, _err := Execute(path, _DIR...)
 	if _err == nil {
 		_lines := strings.Split(string(_output), "\n")
 		for _, _line := range _lines {
