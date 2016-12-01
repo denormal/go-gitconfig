@@ -13,6 +13,11 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	// skip this test if git is not installed
+	if !gittools.HasGit() {
+		t.Skip("git not installed")
+	}
+
 	// ensure New() works as expected
 	//		- the current directory should be a working copy
 	_config, _err := gitconfig.New()
@@ -24,6 +29,11 @@ func TestNew(t *testing.T) {
 } // TestNew()
 
 func TestNewWithPath(t *testing.T) {
+	// skip this test if git is not installed
+	if !gittools.HasGit() {
+		t.Skip("git not installed")
+	}
+
 	// ensure New() works as expected
 	//		- the current directory should be a working copy
 	//		- these tests should work with current drectory and ""
@@ -67,7 +77,6 @@ func TestNewWithPath(t *testing.T) {
 	} else if _config == nil {
 		t.Fatalf("%q: unexpected nil from NewWithPath", _dir)
 	}
-
 } // TestNewWithPath()
 
 func TestGitConfigLocal(t *testing.T) {

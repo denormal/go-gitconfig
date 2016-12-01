@@ -1,6 +1,9 @@
 package gitconfig
 
 import (
+	"os"
+	"path/filepath"
+
 	"github.com/denormal/go-gittools"
 )
 
@@ -9,7 +12,12 @@ import (
 type GitConfig interface {
 	Config
 
+	// Path returns the absolute path used to initialise this GitConfig.
+	Path() string
+
 	// Local returns the local git configuration for the git working copy.
+	// If the path used to initialise this GitConfig is not part of a working
+	// copy, Local() returns nil.
 	Local() Config
 
 	// System returns the system git configuration.
@@ -23,6 +31,7 @@ type GitConfig interface {
 type gc struct {
 	Config
 
+	path   string
 	local  Config
 	system Config
 	global Config
@@ -46,7 +55,23 @@ func New() (GitConfig, error) {
 //
 // If path is "", the current working directory of the process will be used.
 func NewWithPath(path string) (GitConfig, error) {
-	var _local Config
+	var (
+		_local Config
+		_err   error
+	)
+
+	// have we been given a path?
+	if path == "" {
+		path, _err = os.Getwd()
+		if _err != nil {
+			return nil, _err
+		}
+	} else {
+		path, _err = filepath.Abs(path)
+		if _err != nil {
+			return nil, _err
+		}
+	}
 
 	// are we in a git repository?
 	_is, _err := gittools.IsWorkingCopy(path)
@@ -83,8 +108,11 @@ func NewWithPath(path string) (GitConfig, error) {
 	}
 	_config := NewConfig(_all)
 
-	return &gc{_config, _local, _system, _global}, nil
+	return &gc{_config, path, _local, _system, _global}, nil
 } // New()
+
+// Path returns the absolute path used to initialise this GitConfig.
+func (g gc) Path() string { return g.path }
 
 // Local returns the local git configuration for the git working copy.
 // If this GitConfig does not represent a working copy, Local will return nil.
