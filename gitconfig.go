@@ -15,6 +15,11 @@ type GitConfig interface {
 	// Path returns the absolute path used to initialise this GitConfig.
 	Path() string
 
+	// Root returns the root directory of the git working copy. If this
+	// GitConfig is initialised by a path that is not located within a
+	// working copy, Root will return the empty string.
+	Root() string
+
 	// Local returns the local git configuration for the git working copy.
 	// If the path used to initialise this GitConfig is not part of a working
 	// copy, Local() returns nil.
@@ -32,6 +37,7 @@ type gc struct {
 	Config
 
 	path   string
+	root   string
 	local  Config
 	system Config
 	global Config
@@ -74,15 +80,24 @@ func NewWithPath(path string) (GitConfig, error) {
 	}
 
 	// are we in a git repository?
-	_is, _err := gittools.IsWorkingCopy(path)
+	_working, _err := gittools.WorkingCopy(path)
 	if _err != nil {
 		if _err != gittools.MissingWorkingCopyError {
 			return nil, _err
 		}
 	}
+	/*
+		_is, _err := gittools.IsWorkingCopy(path)
+		if _err != nil {
+			if _err != gittools.MissingWorkingCopyError {
+				return nil, _err
+			}
+		}
+	*/
 
 	// if we're in a git repository, attempt to load the local configuration
-	if _is {
+	//	if _is {
+	if _working != "" {
 		_local, _err = NewLocalConfig(path)
 		if _err != nil {
 			return nil, _err
@@ -108,11 +123,16 @@ func NewWithPath(path string) (GitConfig, error) {
 	}
 	_config := NewConfig(_all)
 
-	return &gc{_config, path, _local, _system, _global}, nil
+	return &gc{_config, path, _working, _local, _system, _global}, nil
 } // New()
 
 // Path returns the absolute path used to initialise this GitConfig.
 func (g gc) Path() string { return g.path }
+
+// Root returns the root directory of the git working copy. If this GitConfig
+// is initialised by a path that is not located within a working copy, Root
+// will return the empty string.
+func (g gc) Root() string { return g.root }
 
 // Local returns the local git configuration for the git working copy.
 // If this GitConfig does not represent a working copy, Local will return nil.
