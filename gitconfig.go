@@ -86,17 +86,8 @@ func NewWithPath(path string) (GitConfig, error) {
 			return nil, _err
 		}
 	}
-	/*
-		_is, _err := gittools.IsWorkingCopy(path)
-		if _err != nil {
-			if _err != gittools.MissingWorkingCopyError {
-				return nil, _err
-			}
-		}
-	*/
 
 	// if we're in a git repository, attempt to load the local configuration
-	//	if _is {
 	if _working != "" {
 		_local, _err = NewLocalConfig(path)
 		if _err != nil {
