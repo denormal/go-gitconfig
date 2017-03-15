@@ -43,7 +43,7 @@ func (p *ptest) Test(t *testing.T) {
 		} else if *p.b != _bool {
 			t.Errorf(
 				"%q: boolean mismatch; expected %v, got %v",
-				*p.b, _bool,
+				p.n, *p.b, _bool,
 			)
 		}
 	} else {
@@ -77,7 +77,7 @@ func (p *ptest) Test(t *testing.T) {
 		} else if *p.i != _int {
 			t.Errorf(
 				"%q: integer mismatch; expected %v, got %v",
-				*p.i, _int,
+				p.n, *p.i, _int,
 			)
 		}
 	} else {

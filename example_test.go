@@ -2,12 +2,11 @@ package gitconfig_test
 
 import (
 	"fmt"
-	"testing"
 
 	"github.com/denormal/go-gitconfig"
 )
 
-func ExampleNew(t *testing.T) {
+func ExampleNew() {
 	// attempt to load git configuration from within the current directory
 	config, err := gitconfig.New()
 	if err != nil {
